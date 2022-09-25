@@ -8,15 +8,21 @@ const refs = {
 };
 const formData = {};
 
-populateTextarea();
+
 
 refs.form.addEventListener('input', throttle(onTextareaInput, 500));
+populateTextarea();
 
 refs.form.addEventListener('submit', event => {
-    const objData = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    console.log(objData);
     event.preventDefault();
+
+    const objData = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const { elements: { email, message } } = event.currentTarget;
+    if (email.value === '' || message.value === '') {
+        return alert('Заполните все поля!')
+    }
     event.currentTarget.reset();
+    console.log(objData);
     localStorage.removeItem(STORAGE_KEY);
 });
 
@@ -25,7 +31,6 @@ function onTextareaInput(event) {
     const stringifiedData = JSON.stringify(formData);
     localStorage.setItem(STORAGE_KEY, stringifiedData);
 }
-
 
 function populateTextarea() {
     const savedMessage = JSON.parse(localStorage.getItem(STORAGE_KEY));
