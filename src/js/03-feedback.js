@@ -6,30 +6,27 @@ const refs = {
     textarea: document.querySelector('.feedback-form textarea'),
     input: document.querySelector('input'),
 };
-const formData = {};
-
-
+let formData = {};
 
 refs.form.addEventListener('input', throttle(onTextareaInput, 500));
-populateTextarea();
 
 refs.form.addEventListener('submit', event => {
     event.preventDefault();
 
-    const objData = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    localStorage.removeItem(STORAGE_KEY);
+    formData = {};
     const { elements: { email, message } } = event.currentTarget;
     if (email.value === '' || message.value === '') {
         return alert('Заполните все поля!')
     }
-    event.currentTarget.reset();
-    console.log(objData);
-    localStorage.removeItem(STORAGE_KEY);
+
+    console.log({email: email.value, message: message.value});
+    refs.form.reset();
 });
 
 function onTextareaInput(event) {
     formData[event.target.name] = event.target.value;
-    const stringifiedData = JSON.stringify(formData);
-    localStorage.setItem(STORAGE_KEY, stringifiedData);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 }
 
 function populateTextarea() {
@@ -37,7 +34,8 @@ function populateTextarea() {
     if (savedMessage === null) {
         return;
     }
-    refs.textarea.value = savedMessage['message'] || '';
-    refs.input.value = savedMessage['email'] || '';
+    refs.input.value = savedMessage.email || '';
+    refs.textarea.value = savedMessage.message || '';
 }
 
+populateTextarea();
